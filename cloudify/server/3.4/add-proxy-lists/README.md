@@ -1,6 +1,6 @@
 ### Purpose
 
-In 4.0, their is no way to access lists from the context proxy.  For example, there is no way to access relationship info from a bash script.  This patch adds that capability on manager hosted scripts.
+In 3.4, their is no way to access lists from the context proxy.  For example, there is no way to access relationship info from a bash script.  This patch adds that capability on manager hosted scripts.
 
 ### Installation
 
