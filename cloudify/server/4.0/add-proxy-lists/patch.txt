@@ -1,0 +1,51 @@
+--- /opt/mgmtworker/env/lib/python2.7/site-packages/cloudify/proxy/server.py	2016-12-07 05:37:44.333989000 +0000
++++ server.py	2017-01-16 22:16:04.135337049 +0000
+@@ -1,3 +1,9 @@
++#
++# Enhanced version that handles lists in ctx values
++
++
++
++
+ #########
+ # Copyright (c) 2014 GigaSpaces Technologies Ltd. All rights reserved
+ #
+@@ -190,6 +196,7 @@
+ 
+ 
+ def process_ctx_request(ctx, args):
++    pattern = re.compile("(.+)\[(\d+)\]")
+     current = ctx
+     num_args = len(args)
+     index = 0
+@@ -198,6 +205,7 @@
+         desugared_attr = _desugar_attr(current, arg)
+         if desugared_attr:
+             current = getattr(current, desugared_attr)
++
+         elif isinstance(current, collections.MutableMapping):
+             key = arg
+             path_dict = PathDictAccess(current)
+@@ -212,6 +220,7 @@
+             else:
+                 raise RuntimeError('Illegal argument while accessing dict')
+             break
++
+         elif callable(current):
+             kwargs = {}
+             remaining_args = args[index:]
+@@ -220,6 +229,14 @@
+                 remaining_args = remaining_args[:-1]
+             current = current(*remaining_args, **kwargs)
+             break
++
++        # Detect list
++        elif pattern.match(arg):
++          m=pattern.match(arg)
++          field=m.group(1)
++          indx=int(m.group(2))
++          current=getattr(current,field)[indx]
++
+         else:
+             raise RuntimeError('{0} cannot be processed in {1}'
+                                .format(arg, args))
